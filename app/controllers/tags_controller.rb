@@ -5,6 +5,7 @@ class TagsController < ApplicationController
   # GET /tags.json
   def index
     @tags = Tag.all
+    @uid  = session['warden.user.user.key'][0][0]
   end
 
   # GET /tags/1
@@ -42,7 +43,7 @@ class TagsController < ApplicationController
   def update
     respond_to do |format|
       if @tag.update(tag_params)
-        format.html { redirect_to @tag, notice: 'タグを作成しました。' }
+        format.html { redirect_to @tag, notice: 'タグを編集しました。' }
         format.json { render :show, status: :ok, location: @tag }
       else
         format.html { render :edit }
