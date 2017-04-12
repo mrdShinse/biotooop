@@ -69,3 +69,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Add Rocket.Chat REST API SDK
 gem 'rocketchat-sdk', github: 'vitor-nagao/rocketchat-ruby-sdk'
+
+gem 'webpack-rails'
+
+gem 'foreman'
