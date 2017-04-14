@@ -5,7 +5,7 @@ class EventMailer < ApplicationMailer
   #
   #   en.event_mailer.send.subject
   #
-  def send(user, event)
+  def sender(user, event)
     @user = user
     @event = event
     mail to: @user.email, subject: 'ビオトープイベント開催のお知らせ'
