@@ -20,5 +20,5 @@
 /node_modules
 /public/webpack
 
-# Ignore Elm packages. They can reinstall by elm-package
+# Ignore Elm packages. You can reinstall them by elm-package.
 /elm-stuff
