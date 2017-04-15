@@ -19,3 +19,6 @@
 # Added by webpack-rails
 /node_modules
 /public/webpack
+
+# Ignore Elm packages. They can reinstall by elm-package
+/elm-stuff
