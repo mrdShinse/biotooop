@@ -20,7 +20,7 @@ type alias Model = {
 }
 
 type alias Tag = {
-  id : String,
+  id : Int,
   name : String
 }
 
@@ -42,7 +42,7 @@ update msg _ =
       (Model tags, Cmd.none)
 
     UpdateByHttpResponse (Err _) ->
-      (Model [(Tag "" "error")], Cmd.none)
+      (Model [(Tag 0 "an error occured...")], Cmd.none)
 
 -- VIEW
 
@@ -101,5 +101,5 @@ tagListDecoder =
 tagDecoder : Decode.Decoder Tag
 tagDecoder =
   Decode.map2 Tag
-    (Decode.field "id" Decode.string)
+    (Decode.field "id" Decode.int)
     (Decode.field "name" Decode.string)
