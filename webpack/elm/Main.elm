@@ -1,4 +1,4 @@
-import Html exposing (Html, Attribute, div, input, button)
+import Html exposing (Html, Attribute, div, input, button, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Http
@@ -40,27 +40,46 @@ update msg _ =
 
     UpdateByHttpResponse (Ok tags) ->
       (Model tags, Cmd.none)
+
     UpdateByHttpResponse (Err _) ->
-      (Model [], Cmd.none)
+      (Model [(Tag "" "error")], Cmd.none)
 
 -- VIEW
 
 view : Model -> Html Msg
-view _ =
-  div [] [
-    input [ placeholder "タグ検索", onInput Search, myStyle ] [],
-    div [ myStyle ] []
-  ]
+view model =
+  let
+    styles =
+      style[
+        ("width", "100%"),
+        ("height", "40px"),
+        ("padding", "10px 0"),
+        ("font-size", "2em"),
+        ("text-align", "center")
+      ]
+  in
+    div [] [
+      div [] [
+        input [ placeholder "タグ検索", onInput Search, styles ] []
+      ],
+      div [] (List.map viewTagdetail model.tags)
+    ]
 
-myStyle : Attribute msg
-myStyle =
-  style[
-    ("width", "100%"),
-    ("height", "40px"),
-    ("padding", "10px 0"),
-    ("font-size", "2em"),
-    ("text-align", "center")
-  ]
+viewTagdetail : Tag -> Html Msg
+viewTagdetail tagModel =
+  let
+    styles =
+      style[
+        ("width", "100%"),
+        ("height", "40px"),
+        ("padding", "10px 0"),
+        ("font-size", "2em"),
+        ("border", "solid 2px #eeeeee")
+      ]
+  in
+    div[ styles ][
+      text tagModel.name
+    ]
 
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
