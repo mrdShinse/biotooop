@@ -73,14 +73,14 @@ fetchTagdata =
   let
     url = "http://localhost:5000/tags.json"
   in
-    Http.send UpdateByHttpResponse(Http.get url decodeTaglist)
+    Http.send UpdateByHttpResponse(Http.get url tagListDecoder)
 
-decodeTaglist : Decode.Decoder (List Tag)
-decodeTaglist =
-  Decode.list decodeTagdata
+tagListDecoder : Decode.Decoder (List Tag)
+tagListDecoder =
+  Decode.list tagDecoder
 
-decodeTagdata : Decode.Decoder Tag
-decodeTagdata =
+tagDecoder : Decode.Decoder Tag
+tagDecoder =
   Decode.map2 Tag
     (Decode.field "id" Decode.string)
     (Decode.field "name" Decode.string)
