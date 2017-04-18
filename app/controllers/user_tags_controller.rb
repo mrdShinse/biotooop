@@ -1,6 +1,17 @@
 class UserTagsController < ApplicationController
   before_action :set_tag, only: [ :destroy]
 
+  def Tag
+    Tag
+  end
+
+  # GET /user_tags
+  # GET /user_tags.json
+  def index
+    @uid  = session['warden.user.user.key'][0][0]
+    @user_tags = UserTag.where(user_id: @uid)
+  end
+
   # POST /user_tags
   # POST /user_tags.json
   def create
@@ -28,7 +39,7 @@ class UserTagsController < ApplicationController
   def destroy
     @user_tag.destroy
     respond_to do |format|
-      format.html { redirect_to tags_url, notice: 'タグのコミュニティから抜けました' }
+      format.html { redirect_to user_tags_url, notice: 'タグのコミュニティから抜けました' }
       format.json { head :no_content }
     end
   end

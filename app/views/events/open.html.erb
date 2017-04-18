@@ -1,0 +1,49 @@
+<p id="notice"><%= notice %></p>
+
+<h1>本日開催中のイベント</h1>
+
+<% if @event %>
+
+  <table>
+    <thead>
+      <tr>
+        <th>日付</th>
+        <th>対象エリア</th>
+        <th>集合時間</th>
+        <th>集合場所</th>
+        <th colspan="3"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+          <td><%= @event.date %></td>
+          <td><%= @event.area %></td>
+          <td><%= @event.meeting_time.hour %>:<%= @event.meeting_time.min %></td>
+          <td><%= @event.meeting_place %></td>
+          <td>
+          <% if @user_event %>
+              <%= form_tag({ controller: 'events', action: 'cancel' }, {method: 'post'}) do %>
+                  <%= hidden_field :events, :event_id, :value => @event.id %>
+                  <%= hidden_field :events, :user_id, :value => @uid %>
+                  <%= submit_tag('キャンセル') %>
+              <% end %>
+          <% else %>
+              <%= form_tag({ controller: 'events', action: 'join' }, {method: 'post'}) do %>
+                  <%= hidden_field :events, :event_id, :value => @event.id %>
+                  <%= hidden_field :events, :user_id, :value => @uid %>
+                  <%= submit_tag('参加') %>
+              <% end %>
+          <% end %>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<% else %>
+  <h3>開催中のイベントはありません</h3>
+<% end %>
+
+
+<br>
+
