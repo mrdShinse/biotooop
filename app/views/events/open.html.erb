@@ -22,23 +22,48 @@
           <td><%= @event.meeting_time.hour %>:<%= @event.meeting_time.min %></td>
           <td><%= @event.meeting_place %></td>
           <td>
-          <% if @user_event %>
-              <%= form_tag({ controller: 'events', action: 'cancel' }, {method: 'post'}) do %>
-                  <%= hidden_field :events, :event_id, :value => @event.id %>
-                  <%= hidden_field :events, :user_id, :value => @uid %>
-                  <%= submit_tag('キャンセル') %>
+              <% if @user_event %>
+                <% if @is_entry_time %>
+                  <%= form_tag({ controller: 'events', action: 'cancel' }, {method: 'post'}) do %>
+                      <%= hidden_field :events, :event_id, :value => @event.id %>
+                      <%= hidden_field :events, :user_id, :value => @uid %>
+                      <%= hidden_field :events, :biotoop_time, :value => false %>
+                      <%= submit_tag('キャンセル') %>
+                  <% end %>
+                <% elsif @is_biotoop_time %>
+                  <%= form_tag({ controller: 'events', action: 'cancel' }, {method: 'post'}) do %>
+                      <%= hidden_field :events, :event_id, :value => @event.id %>
+                      <%= hidden_field :events, :user_id, :value => @uid %>
+                      <%= hidden_field :events, :biotoop_time, :value => true %>
+                      <%= submit_tag('辞退') %>
+                  <% end %>
+                <% end %>
+              <% elsif @is_entry_time %>
+                <%= form_tag({ controller: 'events', action: 'join' }, {method: 'post'}) do %>
+                    <%= hidden_field :events, :event_id, :value => @event.id %>
+                    <%= hidden_field :events, :user_id, :value => @uid %>
+                    <%= submit_tag('参加') %>
+                <% end %>
               <% end %>
-          <% else %>
-              <%= form_tag({ controller: 'events', action: 'join' }, {method: 'post'}) do %>
-                  <%= hidden_field :events, :event_id, :value => @event.id %>
-                  <%= hidden_field :events, :user_id, :value => @uid %>
-                  <%= submit_tag('参加') %>
-              <% end %>
-          <% end %>
           </td>
         </tr>
     </tbody>
   </table>
+
+    <% if @is_biotoop_time %>
+        <table>
+          <thead>
+            <tr><th>参加メンバー</th></tr>
+          </thead>
+          <tbody>
+            <% @members.each do |member| %>
+              <tr>
+                <td><%= User.find(member.user_id).name %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+    <% end %>
 
 <% else %>
   <h3>開催中のイベントはありません</h3>

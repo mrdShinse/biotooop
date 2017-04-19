@@ -65,12 +65,21 @@ class EventsController < ApplicationController
     UserEvent
   end
 
+  def logger
+    Rails.logger
+  end
+
   def open
+    @is_entry_time = (Time.now.hour >= 9 && Time.now.hour < 11)
+    @is_biotoop_time = (Time.now.hour >= 11 && Time.now.hour < 13)
     @uid = session['warden.user.user.key'][0][0]
-    logger.debug(Date.today)
     @event = Event.find_by(date: Date.today)
+
     if @event
       @user_event = UserEvent.find_by(user_id: @uid, event_id: @event.id)
+      if @is_biotoop_time
+        @members = UserEvent.where(event_id: @event.id)
+      end
     else
       @event = nil
       @user_event = nil
@@ -106,7 +115,13 @@ class EventsController < ApplicationController
     @event.user_count = @event.user_count - 1
     respond_to do |format|
       if @event.save
-        format.html { redirect_to open_events_url, notice: 'イベントをキャンセルしました' }
+        if events_params['biotooptime']
+          notice = 'イベントを辞退しました'
+          EventMailer.send_cancel_message(User.find@user_event.user_id, @event)
+        else
+          notice = 'イベントをキャンセルしました'
+        end
+        format.html { redirect_to open_events_url, notice: notice }
         format.json { render template: 'events/open', status: :ok, location: @user_event }
       else
         format.html { render template: 'events/open' }
@@ -127,6 +142,6 @@ class EventsController < ApplicationController
     end
 
     def events_params
-      params.require(:events).permit(:user_id, :event_id)
+      params.require(:events).permit(:user_id, :event_id, :biotoop_time)
     end
 end
