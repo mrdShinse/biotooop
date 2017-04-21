@@ -61,6 +61,75 @@ class EventsController < ApplicationController
     end
   end
 
+  def UserEvent
+    UserEvent
+  end
+
+  def logger
+    Rails.logger
+  end
+
+  def open
+    @is_entry_time = (Time.now.hour >= 9 && Time.now.hour < 11)
+    @is_biotoop_time = (Time.now.hour >= 11 && Time.now.hour < 13)
+    @uid = session['warden.user.user.key'][0][0]
+    @event = Event.find_by(date: Date.today)
+
+    if @event
+      @user_event = UserEvent.find_by(user_id: @uid, event_id: @event.id)
+      if @is_biotoop_time
+        @members = UserEvent.where(event_id: @event.id)
+      end
+    else
+      @event = nil
+      @user_event = nil
+    end
+  end
+
+  def join
+    @user_event = UserEvent.new(events_params)
+    respond_to do |format|
+      if @user_event.save
+        @event = Event.find(@user_event.event_id)
+
+        @event.user_count = @event.user_count + 1
+        if @event.save
+          format.html { redirect_to open_events_url, notice: 'イベントに参加しました' }
+          format.json { render template: 'events/open', status: :created, location: @user_event }
+        else
+          format.html { render template: 'events/open' }
+          format.json { render json: @event.errors, status: :unprocessable_entity }
+        end
+      else
+        format.html { render template: 'events/open' }
+        format.json { render json: @user_event.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def cancel
+    @user_event = UserEvent.find_by(events_params)
+    @event = Event.find(@user_event.event_id)
+
+    @user_event.destroy
+    @event.user_count = @event.user_count - 1
+    respond_to do |format|
+      if @event.save
+        if events_params['biotooptime']
+          notice = 'イベントを辞退しました'
+          EventMailer.send_cancel_message(User.find@user_event.user_id, @event)
+        else
+          notice = 'イベントをキャンセルしました'
+        end
+        format.html { redirect_to open_events_url, notice: notice }
+        format.json { render template: 'events/open', status: :ok, location: @user_event }
+      else
+        format.html { render template: 'events/open' }
+        format.json { render json: @event.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_event
@@ -70,5 +139,9 @@ class EventsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def event_params
       params.require(:event).permit(:date, :type, :area, :meeting_time, :meeting_place)
+    end
+
+    def events_params
+      params.require(:events).permit(:user_id, :event_id, :biotoop_time)
     end
 end

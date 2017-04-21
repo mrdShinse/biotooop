@@ -1,4 +1,8 @@
 require 'date'
+# Extend logger to the main object
+def logger
+  Rails.logger
+end
 
 namespace :event_task do
   desc "create this weekend's event"
@@ -8,14 +12,14 @@ namespace :event_task do
         date: Date.today,
         type: 1,
         area: '豊洲',
-        meeting_time: '１２時',
+        meeting_time: '12:00',
         meeting_place: 'ローソン前',
-        num_users: 0
+        user_count: 0
     }
     if event.save
       users = User.all
       users.each do |user|
-        EventMailer.send(user, event).deliver_now
+        EventMailer.sender(user, event).deliver_now
       end
       puts 'event created'
     else

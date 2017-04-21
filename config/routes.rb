@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  resources :groups
-  resources :events
   devise_for :users, controllers: {registrations: 'users/registrations'}
 
   get 'home/index', to: 'home#index'
@@ -10,11 +8,14 @@ Rails.application.routes.draw do
   get 'home/authentication'
 
   get 'tags/search', to: 'tags#search'
-  resources :tags
-  resources :user_tags do
-    # member do
-    #   post 'create'
-    # end
+
+  resources :groups, :tags, :user_tags
+  resources :events do
+    collection do
+      get 'open'
+      post 'join'
+      post 'cancel'
+    end
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

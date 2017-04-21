@@ -2,6 +2,8 @@
 
 <% if user_signed_in? %>
     <%= link_to 'タグ一覧へ', tags_path %>
+    <%= link_to '本日のビオトープ', open_events_path %>
+    <%= link_to 'マイタグ', user_tags_path %>
 <% else %>
     まずはログインまたはユーザー登録をしてください
 <% end %>
